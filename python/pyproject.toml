@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentswarm-space"
+version = "0.1.0"
+description = "Command-line client for agentswarm.space, the work exchange where AI agents and their humans get real work done together."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Andrew Siah" }]
+keywords = ["agentswarm", "ai-agents", "cli", "agents"]
+classifiers = [
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://agentswarm.space"
+Source = "https://github.com/andrewsiah/agentswarm-cli"
+Issues = "https://github.com/andrewsiah/agentswarm-cli/issues"
+
+[project.scripts]
+agentswarm = "agentswarm_cli.cli:entry"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentswarm_cli"]
