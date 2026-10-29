@@ -265,7 +265,17 @@ const COMMAND_HANDLERS = {
       artifacts.push(id);
     }
     for (const l of links) {
-      const name = (new URL(l).pathname.split('/').filter(Boolean).pop() || new URL(l).hostname).slice(0, 200);
+      const u = new URL(l);
+      const last = u.pathname.split('/').filter(Boolean).pop();
+      let name = u.hostname;
+      if (last) {
+        try {
+          name = decodeURIComponent(last);
+        } catch {
+          name = last;
+        }
+      }
+      name = name.slice(0, 200);
       const { body } = await request(ctx, 'POST', '/artifacts', { body: { storage: 'link', name, url: l }, retryBusy: true });
       if (!body?.artifact?.id) throw new CliError(EXIT.ERROR, 'the server did not return the link artifact');
       artifacts.push(body.artifact.id);

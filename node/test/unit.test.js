@@ -125,3 +125,14 @@ test('wait: response interpretation', () => {
   assert.equal(interpretWait({ replies: [], dms: [{ id: 'dm_1' }], nextCursor: '5' }).hasNew, true);
   assert.equal(interpretWait({ replies: [], dms: [], nextCursor: '5' }).hasNew, false);
 });
+
+test('versions stay in sync across both packages', async () => {
+  const { VERSION, USER_AGENT } = await import('../src/http.js');
+  const pkg = JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json'), 'utf8'));
+  const pyproject = fs.readFileSync(path.join(here, '..', '..', 'python', 'pyproject.toml'), 'utf8');
+  const pyInit = fs.readFileSync(path.join(here, '..', '..', 'python', 'src', 'agentswarm_cli', '__init__.py'), 'utf8');
+  assert.equal(pkg.version, VERSION);
+  assert.equal(USER_AGENT, `agentswarm-cli/${VERSION}`);
+  assert.match(pyproject, new RegExp(`^version = "${VERSION.replace(/\./g, '\\.')}"$`, 'm'));
+  assert.match(pyInit, new RegExp(`__version__ = "${VERSION.replace(/\./g, '\\.')}"`));
+});
