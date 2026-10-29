@@ -1,0 +1,26 @@
+{
+  "about": "Shared terminal-escaping vectors for both implementations. 'body' is multi-line member text (newline and tab kept); 'inline' is a one-line field such as a title, handle or mission name.",
+  "cases": [
+    {"name": "plain ascii", "input": "Fix the CSV export", "body": "Fix the CSV export", "inline": "Fix the CSV export"},
+    {"name": "plain unicode", "input": "h\u00E9llo \u4E16\u754C \uD83D\uDE42", "body": "h\u00E9llo \u4E16\u754C \uD83D\uDE42", "inline": "h\u00E9llo \u4E16\u754C \uD83D\uDE42"},
+    {"name": "RLO bidi override", "input": "invoice\u202Etxt.exe", "body": "invoice\\u202Etxt.exe", "inline": "invoice\\u202Etxt.exe"},
+    {"name": "LRO and PDF", "input": "\u202Dab\u202C", "body": "\\u202Dab\\u202C", "inline": "\\u202Dab\\u202C"},
+    {"name": "bidi isolates", "input": "\u2066x\u2067y\u2068z\u2069", "body": "\\u2066x\\u2067y\\u2068z\\u2069", "inline": "\\u2066x\\u2067y\\u2068z\\u2069"},
+    {"name": "LRM RLM ALM", "input": "a\u200Eb\u200Fc\u061Cd", "body": "a\\u200Eb\\u200Fc\\u061Cd", "inline": "a\\u200Eb\\u200Fc\\u061Cd"},
+    {"name": "ANSI CSI color", "input": "\u001b[31mred\u001b[0m", "body": "\\u001B[31mred\\u001B[0m", "inline": "\\u001B[31mred\\u001B[0m"},
+    {"name": "ANSI OSC title", "input": "\u001b]0;pwned\u0007", "body": "\\u001B]0;pwned\\u0007", "inline": "\\u001B]0;pwned\\u0007"},
+    {"name": "C1 NEL", "input": "a\u0085b", "body": "a\\u0085b", "inline": "a\\u0085b"},
+    {"name": "C1 CSI", "input": "\u009b2J", "body": "\\u009B2J", "inline": "\\u009B2J"},
+    {"name": "DEL", "input": "a\u007fb", "body": "a\\u007Fb", "inline": "a\\u007Fb"},
+    {"name": "NUL and BEL", "input": "\u0000\u0007", "body": "\\u0000\\u0007", "inline": "\\u0000\\u0007"},
+    {"name": "carriage return", "input": "ok\rFAKE", "body": "ok\\u000DFAKE", "inline": "ok\\u000DFAKE"},
+    {"name": "newline and tab", "input": "a\nb\tc", "body": "a\nb\tc", "inline": "a\\u000Ab\\u0009c"},
+    {"name": "zero width space", "input": "pay\u200Bpal", "body": "pay\\u200Bpal", "inline": "pay\\u200Bpal"},
+    {"name": "ZWNJ ZWJ", "input": "a\u200Cb\u200Dc", "body": "a\\u200Cb\\u200Dc", "inline": "a\\u200Cb\\u200Dc"},
+    {"name": "word joiner and BOM", "input": "\u2060x\uFEFF", "body": "\\u2060x\\uFEFF", "inline": "\\u2060x\\uFEFF"},
+    {"name": "line and paragraph separators", "input": "a\u2028b\u2029c", "body": "a\\u2028b\\u2029c", "inline": "a\\u2028b\\u2029c"},
+    {"name": "soft hyphen", "input": "in\u00ADvisible", "body": "in\\u00ADvisible", "inline": "in\\u00ADvisible"},
+    {"name": "unicode tag characters", "input": "hi\uDB40\uDC41\uDB40\uDC7F", "body": "hi\\u{E0041}\\u{E007F}", "inline": "hi\\u{E0041}\\u{E007F}"},
+    {"name": "lone surrogate", "input": "x\ud800y", "body": "x\\uD800y", "inline": "x\\uD800y"}
+  ]
+}

@@ -1,0 +1,15 @@
+node_modules/
+*.tgz
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.DS_Store
+# never commit credentials
+key
+recovery-code
+.env
