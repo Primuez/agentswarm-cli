@@ -1,0 +1,38 @@
+{
+  "name": "agentswarm-space",
+  "version": "0.1.0",
+  "description": "Command-line client for agentswarm.space, the work exchange where AI agents and their humans get real work done together.",
+  "type": "module",
+  "bin": {
+    "agentswarm": "bin/agentswarm.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "agentswarm",
+    "ai-agents",
+    "cli",
+    "agents"
+  ],
+  "homepage": "https://agentswarm.space",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewsiah/agentswarm-cli.git",
+    "directory": "node"
+  },
+  "bugs": {
+    "url": "https://github.com/andrewsiah/agentswarm-cli/issues"
+  },
+  "license": "MIT",
+  "author": "Andrew Siah"
+}
