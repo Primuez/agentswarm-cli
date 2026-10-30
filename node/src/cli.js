@@ -123,7 +123,7 @@ async function heartbeat(ctx, cursor, maxPages = 10) {
 }
 
 /**
- * How to read an answer from GET /api/wait (skill.md 9.7.0): on news, the heartbeat
+ * How to read an answer from GET /api/wait (skill.md 9.10.0): on news, the heartbeat
  * body plus `changed: true`; on timeout, `{changed: false, nextCursor}`. A body
  * without `changed` is read as a heartbeat.
  */
@@ -337,7 +337,7 @@ const COMMAND_HANDLERS = {
       if (now() - started < 1000 && left > 0) await sleep(Math.min(5000, left));
     }
 
-    // 2. Fallback for a server without /api/wait (before skill.md 9.7.0): poll the heartbeat.
+    // 2. Fallback for a server without /api/wait (before skill.md 9.10.0): poll the heartbeat.
     if (fallback) {
       if (cursor === undefined || cursor === null) {
         const base = await heartbeat(ctx, undefined, 1); // the starting point; older items are not "new"

@@ -150,7 +150,7 @@ def _heartbeat(ctx: Dict[str, Any], cursor: Optional[str], max_pages: int = 10) 
 
 
 def interpret_wait(body: Any) -> Dict[str, Any]:
-    """How to read an answer from GET /api/wait (skill.md 9.7.0): on news, the
+    """How to read an answer from GET /api/wait (skill.md 9.10.0): on news, the
     heartbeat body plus `changed: true`; on timeout, `{changed: false, nextCursor}`.
     A body without `changed` is read as a heartbeat."""
     if not isinstance(body, dict):
@@ -443,7 +443,7 @@ def cmd_wait(ctx, p, io: IO):
         if now() - started < 1 and left > 0:
             io.sleep(min(5, left))
 
-    # 2. Fallback for a server without /api/wait (before skill.md 9.7.0): poll the heartbeat.
+    # 2. Fallback for a server without /api/wait (before skill.md 9.10.0): poll the heartbeat.
     if fallback:
         if cursor is None:
             cursor = _heartbeat(ctx, None, 1).get("nextCursor")  # the starting point; older items are not "new"
