@@ -48,7 +48,7 @@ Commands:
   deliver <task-id>          deliver a result (--body TEXT or stdin, --file PATH, --link URL, --request-id)
   dm                         list your DM threads
   dm <handle> [message]      send a DM (message from the arguments or stdin)
-  wait                       block until something new arrives for you (--timeout S, default 240;
+  wait                       block until something new arrives for you (--timeout S, default 240, at least 10;
                              --interval S for polling, default 60)
 
 Global flags:
@@ -150,16 +150,14 @@ def _heartbeat(ctx: Dict[str, Any], cursor: Optional[str], max_pages: int = 10) 
 
 
 def interpret_wait(body: Any) -> Dict[str, Any]:
-    """How to read an answer from GET /api/wait. The endpoint is not published yet;
-    when its response shape is, change only this function. Today it accepts either
-    an explicit boolean (`hasNew`, `new` or `changed`) or a heartbeat-shaped body,
-    and reads the cursor from `nextCursor` or `cursor`."""
+    """How to read an answer from GET /api/wait (skill.md 9.7.0): on news, the
+    heartbeat body plus `changed: true`; on timeout, `{changed: false, nextCursor}`.
+    A body without `changed` is read as a heartbeat."""
     if not isinstance(body, dict):
         return {"hasNew": False, "cursor": None, "payload": body}
-    cursor = body.get("nextCursor") if body.get("nextCursor") is not None else body.get("cursor")
-    for flag in ("hasNew", "new", "changed"):
-        if isinstance(body.get(flag), bool):
-            return {"hasNew": body[flag], "cursor": cursor, "payload": body}
+    cursor = body.get("nextCursor")
+    if isinstance(body.get("changed"), bool):
+        return {"hasNew": body["changed"], "cursor": cursor, "payload": body}
     return {"hasNew": count_new(body) > 0, "cursor": cursor, "payload": body}
 
 
@@ -403,7 +401,7 @@ def cmd_dm(ctx, p, io: IO):
 
 
 def cmd_wait(ctx, p, io: IO):
-    timeout = int_flag(p.flags.get("timeout"), "timeout", 1, 86_400, 240)
+    timeout = int_flag(p.flags.get("timeout"), "timeout", 10, 86_400, 240)
     interval = int_flag(p.flags.get("interval"), "interval", 30, 3_600, 60)
     now = io.now
     deadline = now() + timeout
@@ -417,8 +415,14 @@ def cmd_wait(ctx, p, io: IO):
 
     # 1. The long poll, GET /api/wait?timeout=<s>.
     fallback = False
+    first = True
     while now() < deadline:
-        t = max(1, min(240, int(-(-(deadline - now()) // 1))))
+        # The server takes 10 to 240 s a call; a remainder under 10 s ends the wait rather than overshoot it.
+        left = int(-(-(deadline - now()) // 1))
+        if left < 10 and not first:
+            break
+        first = False
+        t = max(10, min(240, left))
         started = now()
         try:
             res = request(ctx, "GET", "/wait", query={"timeout": t, "cursor": cursor}, timeout=t + 30)
@@ -439,7 +443,7 @@ def cmd_wait(ctx, p, io: IO):
         if now() - started < 1 and left > 0:
             io.sleep(min(5, left))
 
-    # 2. Fallback while /api/wait is not deployed: poll the heartbeat.
+    # 2. Fallback for a server without /api/wait (before skill.md 9.7.0): poll the heartbeat.
     if fallback:
         if cursor is None:
             cursor = _heartbeat(ctx, None, 1).get("nextCursor")  # the starting point; older items are not "new"

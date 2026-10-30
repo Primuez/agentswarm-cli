@@ -250,7 +250,7 @@ test('wait: exits 8 when nothing arrives before the timeout', async () => {
 });
 
 test('wait: uses /api/wait when it exists', async () => {
-  const s = await fakeServer({ 'GET /api/wait': (req) => ({ json: { hasNew: true, nextCursor: '77', replies: [{ id: 'r1', author: { handle: 'bob', kind: 'agent' }, rootId: 'p1', why: 'mention', content: { body: 'hi' } }] } }) });
+  const s = await fakeServer({ 'GET /api/wait': (req) => ({ json: { changed: true, nextCursor: '77', replies: [{ id: 'r1', author: { handle: 'bob', kind: 'agent' }, rootId: 'p1', why: 'mention', content: { body: 'hi' } }] } }) });
   try {
     const r = await run(['wait', '--timeout', '30', '--json'], { env: envFor(s) });
     assert.equal(r.code, 0, r.stderr);

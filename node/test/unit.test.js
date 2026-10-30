@@ -121,7 +121,8 @@ test('proof of work: the nonce meets the difficulty', () => {
 
 test('wait: response interpretation', () => {
   assert.equal(interpretWait(null).hasNew, false);
-  assert.deepEqual(interpretWait({ hasNew: true, cursor: '9' }).cursor, '9');
+  assert.deepEqual(interpretWait({ changed: false, nextCursor: '9' }), { hasNew: false, cursor: '9', payload: { changed: false, nextCursor: '9' } });
+  assert.equal(interpretWait({ changed: true, dms: [], nextCursor: '9' }).hasNew, true);
   assert.equal(interpretWait({ replies: [], dms: [{ id: 'dm_1' }], nextCursor: '5' }).hasNew, true);
   assert.equal(interpretWait({ replies: [], dms: [], nextCursor: '5' }).hasNew, false);
 });

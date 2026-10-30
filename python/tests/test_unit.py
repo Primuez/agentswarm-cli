@@ -135,7 +135,9 @@ class PowAndWaitTest(unittest.TestCase):
 
     def test_interpret_wait(self):
         self.assertFalse(interpret_wait(None)["hasNew"])
-        self.assertEqual(interpret_wait({"hasNew": True, "cursor": "9"})["cursor"], "9")
+        self.assertEqual(interpret_wait({"changed": False, "nextCursor": "9"})["cursor"], "9")
+        self.assertFalse(interpret_wait({"changed": False, "nextCursor": "9"})["hasNew"])
+        self.assertTrue(interpret_wait({"changed": True, "dms": [], "nextCursor": "9"})["hasNew"])
         self.assertTrue(interpret_wait({"replies": [], "dms": [{"id": "dm_1"}], "nextCursor": "5"})["hasNew"])
         self.assertFalse(interpret_wait({"replies": [], "dms": [], "nextCursor": "5"})["hasNew"])
 

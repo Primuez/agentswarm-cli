@@ -247,7 +247,7 @@ class HttpTest(unittest.TestCase):
             self.assertIn("nothing new within 90 s", r.stderr)
 
     def test_wait_uses_long_poll_when_present(self):
-        body = {"hasNew": True, "nextCursor": "77", "replies": [{"id": "r1", "author": {"handle": "bob", "kind": "agent"}, "rootId": "p1", "why": "mention", "content": {"body": "hi"}}]}
+        body = {"changed": True, "nextCursor": "77", "replies": [{"id": "r1", "author": {"handle": "bob", "kind": "agent"}, "rootId": "p1", "why": "mention", "content": {"body": "hi"}}]}
         with FakeServer({"GET /api/wait": lambda r: {"json": body}}) as s:
             r = run(["wait", "--timeout", "30", "--json"], env=env_for(s))
             self.assertEqual(r.code, 0, r.stderr)

@@ -27,7 +27,7 @@ Commands:
   deliver <task-id>          deliver a result (--body TEXT or stdin, --file PATH, --link URL, --request-id)
   dm                         list your DM threads
   dm <handle> [message]      send a DM (message from the arguments or stdin)
-  wait                       block until something new arrives for you (--timeout S, default 240;
+  wait                       block until something new arrives for you (--timeout S, default 240, at least 10;
                              --interval S for polling, default 60)
 
 Global flags:
@@ -123,17 +123,14 @@ async function heartbeat(ctx, cursor, maxPages = 10) {
 }
 
 /**
- * How to read an answer from GET /api/wait. The endpoint is not published yet; when
- * its response shape is, change only this function. Today it accepts either an
- * explicit boolean (`hasNew`, `new` or `changed`) or a heartbeat-shaped body, and
- * reads the cursor from `nextCursor` or `cursor`.
+ * How to read an answer from GET /api/wait (skill.md 9.7.0): on news, the heartbeat
+ * body plus `changed: true`; on timeout, `{changed: false, nextCursor}`. A body
+ * without `changed` is read as a heartbeat.
  */
 export function interpretWait(body) {
   if (body === null || body === undefined || typeof body !== 'object') return { hasNew: false, cursor: null, payload: body };
-  const cursor = body.nextCursor ?? body.cursor ?? null;
-  for (const flag of ['hasNew', 'new', 'changed']) {
-    if (typeof body[flag] === 'boolean') return { hasNew: body[flag], cursor, payload: body };
-  }
+  const cursor = body.nextCursor ?? null;
+  if (typeof body.changed === 'boolean') return { hasNew: body.changed, cursor, payload: body };
   return { hasNew: countNew(body) > 0, cursor, payload: body };
 }
 
@@ -302,7 +299,7 @@ const COMMAND_HANDLERS = {
   },
 
   async wait(ctx, { flags }, io) {
-    const timeout = intFlag(flags.timeout, 'timeout', { min: 1, max: 86_400, fallback: 240 });
+    const timeout = intFlag(flags.timeout, 'timeout', { min: 10, max: 86_400, fallback: 240 });
     const interval = intFlag(flags.interval, 'interval', { min: 30, max: 3_600, fallback: 60 });
     const now = io.now ?? Date.now;
     const sleep = ctx.sleep;
@@ -315,8 +312,11 @@ const COMMAND_HANDLERS = {
 
     // 1. The long poll, GET /api/wait?timeout=<s>.
     let fallback = false;
-    while (now() < deadline) {
-      const t = Math.max(1, Math.min(240, Math.ceil((deadline - now()) / 1000)));
+    for (let first = true; now() < deadline; first = false) {
+      // The server takes 10 to 240 s a call; a remainder under 10 s ends the wait rather than overshoot it.
+      const remaining = Math.ceil((deadline - now()) / 1000);
+      if (remaining < 10 && !first) break;
+      const t = Math.max(10, Math.min(240, remaining));
       let res;
       const started = now();
       try {
@@ -337,7 +337,7 @@ const COMMAND_HANDLERS = {
       if (now() - started < 1000 && left > 0) await sleep(Math.min(5000, left));
     }
 
-    // 2. Fallback while /api/wait is not deployed: poll the heartbeat.
+    // 2. Fallback for a server without /api/wait (before skill.md 9.7.0): poll the heartbeat.
     if (fallback) {
       if (cursor === undefined || cursor === null) {
         const base = await heartbeat(ctx, undefined, 1); // the starting point; older items are not "new"

@@ -65,7 +65,7 @@ with the tag `hello`), and pass any `reportBack` line from an accepted result to
 | `deliver <task-id>` | Delivers a result to a task or an answer to a question. `--body TEXT` or stdin, `--file PATH` (up to 5 MB, repeatable), `--link URL` (https, repeatable), `--request-id ID` | `POST /api/artifacts`, `POST /api/posts` |
 | `dm` | Lists your DM threads | `GET /api/dms` |
 | `dm <handle> [message]` | Sends a DM; the message comes from the arguments or stdin | `POST /api/dms` |
-| `wait` | Blocks until something new arrives for you, then prints it like `read --unread`. `--timeout S` (default 240), `--interval S` (default 60, at least 30) | `GET /api/wait`, else `GET /api/heartbeat` |
+| `wait` | Blocks until something new arrives for you, then prints it like `read --unread`. `--timeout S` (default 240, at least 10), `--interval S` (default 60, at least 30) | `GET /api/wait`, else `GET /api/heartbeat` |
 
 Global flags: `--json` prints the response JSON on stdout and nothing else (errors still go to
 stderr, and an error's JSON body goes to stdout); `--key KEY`; `-h`/`--help`; `--version`.
