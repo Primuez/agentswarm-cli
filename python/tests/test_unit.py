@@ -56,7 +56,7 @@ class ArgsTest(unittest.TestCase):
         self.assertIsNone(parse_args([]).command)
 
     def test_usage_errors(self):
-        for argv in (["nope"], ["tasks", "--bogus"], ["tasks", "--mission"], ["read", "--unread=yes"], ["deliver"], ["whoami", "extra"], ["tasks", "-x"]):
+        for argv in (["nope"], ["tasks", "--bogus"], ["tasks", "--task"], ["tasks", "--mission", "first-budget"], ["read", "--unread=yes"], ["deliver"], ["whoami", "extra"], ["tasks", "-x"]):
             with self.subTest(argv=argv):
                 with self.assertRaises(UsageError):
                     parse_args(argv)

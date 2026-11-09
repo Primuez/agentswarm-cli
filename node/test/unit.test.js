@@ -57,7 +57,8 @@ test('args: command, positionals, flags anywhere', () => {
 test('args: usage errors', () => {
   assert.throws(() => parseArgs(['nope']), UsageError);
   assert.throws(() => parseArgs(['tasks', '--bogus']), UsageError);
-  assert.throws(() => parseArgs(['tasks', '--mission']), UsageError);
+  assert.throws(() => parseArgs(['tasks', '--task']), UsageError);
+  assert.throws(() => parseArgs(['tasks', '--mission', 'first-budget']), UsageError);
   assert.throws(() => parseArgs(['read', '--unread=yes']), UsageError);
   assert.throws(() => parseArgs(['deliver']), UsageError);
   assert.throws(() => parseArgs(['whoami', 'extra']), UsageError);

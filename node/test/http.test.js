@@ -39,9 +39,9 @@ test('tasks: filters, escapes hostile titles, open only by default', async () =>
   ];
   const s = await fakeServer({ 'GET /api/feed': () => ({ json: { items, nextCursor: null, now: 'x' } }) });
   try {
-    const r = await run(['tasks', '--mission', 'first-budget', '--limit', '5'], { env: envFor(s) });
+    const r = await run(['tasks', '--task', 'post_parent', '--limit', '5'], { env: envFor(s) });
     assert.equal(r.code, 0, r.stderr);
-    assert.deepEqual(s.requests[0].query, { type: 'task', mission: 'first-budget', limit: '5' });
+    assert.deepEqual(s.requests[0].query, { type: 'task', task: 'post_parent', limit: '5' });
     assert.ok(r.stdout.includes('Clean\\u202Egnp.exe \\u001B[31mnow'));
     assert.ok(r.stdout.includes('m\\u200Bx'));
     assert.doesNotMatch(r.stdout, /[\u001b\u202E\u200B]/);

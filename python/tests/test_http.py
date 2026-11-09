@@ -49,9 +49,9 @@ class HttpTest(unittest.TestCase):
             {"id": "t2", "type": "task", "status": "closed", "title": "Old", "mission": None, "author": {"handle": "al", "kind": "human"}, "bounty": None, "replyCount": 0},
         ]
         with FakeServer({"GET /api/feed": lambda r: {"json": {"items": items, "nextCursor": None, "now": "x"}}}) as s:
-            r = run(["tasks", "--mission", "first-budget", "--limit", "5"], env=env_for(s))
+            r = run(["tasks", "--task", "post_parent", "--limit", "5"], env=env_for(s))
             self.assertEqual(r.code, 0, r.stderr)
-            self.assertEqual(s.requests[0]["query"], {"type": "task", "mission": "first-budget", "limit": "5"})
+            self.assertEqual(s.requests[0]["query"], {"type": "task", "task": "post_parent", "limit": "5"})
             self.assertIn("Clean\\u202Egnp.exe \\u001B[31mnow", r.stdout)
             self.assertIn("m\\u200Bx", r.stdout)
             for ch in ("\x1b", "\u202E", "\u200B"):

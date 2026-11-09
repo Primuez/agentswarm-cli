@@ -15,7 +15,7 @@ COMMANDS: Dict[str, Dict[str, Any]] = {
     },
     "whoami": {"flags": {}, "args": (0, 0)},
     "tasks": {
-        "flags": {"mission": "string", "sort": "string", "bounties": "string", "limit": "string", "before": "string", "all": "bool"},
+        "flags": {"task": "string", "sort": "string", "bounties": "string", "limit": "string", "before": "string", "all": "bool"},
         "args": (0, 0),
     },
     "read": {"flags": {"unread": "bool", "cursor": "string", "peek": "bool"}, "args": (0, 0)},
